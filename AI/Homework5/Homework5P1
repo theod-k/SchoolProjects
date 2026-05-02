@@ -1,0 +1,105 @@
+import numpy as np
+
+# States and actions
+states = ['low', 'medium', 'high', 'top']
+actions = ['slow', 'fast']
+
+# Initialize state indices
+state_indices = {state: idx for idx, state in enumerate(states)}
+
+# Transition probabilities for each action
+P = {
+    'slow': {
+        'low': {'low': 0.7, 'medium': 0.3, 'high': 0.0, 'top': 0.0},
+        'medium': {'low': 0.7, 'medium': 0.0, 'high': 0.3, 'top': 0.0},
+        'high': {'low': 0.7, 'medium': 0.0, 'high': 0.0, 'top': 0.3},
+        'top': {'low': 0.0, 'medium': 0.0, 'high': 0.0, 'top': 1.0}
+    },
+    'fast': {
+        'low': {'low': 0.5, 'medium': 0.5, 'high': 0.0, 'top': 0.0},
+        'medium': {'low': 0.5, 'medium': 0.0, 'high': 0.5, 'top': 0.0},
+        'high': {'low': 0.5, 'medium': 0.0, 'high': 0.0, 'top': 0.5},
+        'top': {'low': 0.0, 'medium': 0.0, 'high': 0.0, 'top': 1.0}
+    }
+}
+
+# Energy costs for each action
+costs = {
+    'slow': 1,  # Slow spin uses 1 unit of energy
+    'fast': 2   # Fast spin uses 2 units of energy
+}
+
+# Initialize the value function for all states (arbitrary large values except for the top state)
+V = np.inf * np.ones(len(states))
+V[state_indices['top']] = 0  # The value at 'top' is 0 because it's the goal state
+
+# Value iteration parameters
+epsilon = 1e-6  # Convergence threshold
+max_iterations = 1000  # Maximum number of iterations
+
+# Value iteration loop
+for _ in range(max_iterations):
+    delta = 0  # Convergence metric (maximum change in value function)
+    
+    # Iterate over all states (except 'top' as it's the terminal state)
+    for s in range(len(states)-1):  # We don't update the value of 'top'
+        state = states[s]
+        best_value = np.inf
+        
+        # Try both actions: 'slow' and 'fast'
+        for action in actions:
+            expected_value = 0  # Initialize expected value for this action
+            
+            # Compute the expected value of taking this action from the current state
+            for next_state, prob in P[action][state].items():
+                if np.isfinite(V[state_indices[next_state]]):  # Make sure the value is valid (not NaN)
+                    expected_value += prob * V[state_indices[next_state]]
+            
+            # Compute the total cost for this action
+            total_cost = expected_value + costs[action]
+            
+            # Take the minimum of the expected value for both actions
+            best_value = min(best_value, total_cost)
+        
+        # Update the value function for this state
+        delta = max(delta, abs(V[s] - best_value))
+        V[s] = best_value
+    
+    # Check for convergence
+    if delta < epsilon:
+        break
+
+# Output the optimal value function
+print("Optimal value function:")
+for state, value in zip(states, V):
+    print(f"{state}: {value}")
+
+# The optimal policy (action to take in each state)
+optimal_policy = []
+for s in range(len(states)-1):  # We don't compute the policy for 'top'
+    best_action = None
+    best_value = np.inf
+    
+    # Try both actions and choose the one with the smallest expected cost
+    for action in actions:
+        expected_value = 0  # Initialize expected value for this action
+        
+        # Compute the expected value of taking this action from the current state
+        for next_state, prob in P[action][states[s]].items():
+            if np.isfinite(V[state_indices[next_state]]):  # Make sure the value is valid (not NaN)
+                expected_value += prob * V[state_indices[next_state]]
+        
+        # Compute the total cost for this action
+        total_cost = expected_value + costs[action]
+        
+        # Update the best action if this action is better
+        if total_cost < best_value:
+            best_value = total_cost
+            best_action = action
+    
+    optimal_policy.append(best_action)
+
+# Output the optimal policy
+print("\nOptimal policy (action to take from each state):")
+for state, action in zip(states[:-1], optimal_policy):
+    print(f"{state}: {action}")
