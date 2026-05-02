@@ -1,0 +1,14 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     my_memcheck.so
+relocations:
+  - { offsetInCU: 0x33, offset: 0x33, size: 0x8, addend: 0x0, symName: _malloc, symObjAddr: 0x0, symBinAddr: 0x3D24, symSize: 0xDC }
+  - { offsetInCU: 0x58, offset: 0x58, size: 0x8, addend: 0x0, symName: _malloc.recursively_called, symObjAddr: 0xC70, symBinAddr: 0x8000, symSize: 0x0 }
+  - { offsetInCU: 0x6D, offset: 0x6D, size: 0x8, addend: 0x0, symName: _malloc.real_malloc, symObjAddr: 0xC78, symBinAddr: 0x8008, symSize: 0x0 }
+  - { offsetInCU: 0xE4, offset: 0xE4, size: 0x8, addend: 0x0, symName: _free, symObjAddr: 0xDC, symBinAddr: 0x3E00, symSize: 0xC8 }
+  - { offsetInCU: 0x105, offset: 0x105, size: 0x8, addend: 0x0, symName: _free.recursively_called, symObjAddr: 0xC80, symBinAddr: 0x8010, symSize: 0x0 }
+  - { offsetInCU: 0x11A, offset: 0x11A, size: 0x8, addend: 0x0, symName: _free.real_free, symObjAddr: 0xC88, symBinAddr: 0x8018, symSize: 0x0 }
+  - { offsetInCU: 0x14A, offset: 0x14A, size: 0x8, addend: 0x0, symName: _my_memcheck_pool, symBinAddr: 0x8020, symSize: 0x0 }
+  - { offsetInCU: 0x162, offset: 0x162, size: 0x8, addend: 0x0, symName: _premain, symObjAddr: 0x1A4, symBinAddr: 0x3EC8, symSize: 0x28 }
+  - { offsetInCU: 0x177, offset: 0x177, size: 0x8, addend: 0x0, symName: _postmain, symObjAddr: 0x1CC, symBinAddr: 0x3EF0, symSize: 0x28 }
+...
